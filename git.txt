@@ -1,0 +1,112 @@
+git init
+git status
+git add *
+git commit -m "message"
+	git commit -a -m "message" //以上2步合成一步，但是注意，这样只提交“修改过的文件”，新添加的文件，没有被tracked，必须用 git add
+git log -n 5 //列出最近5次提交
+git tag `date "+%Y-%m-%d_%H-%M-%S"`
+git tag
+git checkout tag_name
+git checkout master    //从 tag 回到 mainline 最新的 commit
+git checkout filename    //回滚一个文件
+
+删库：1）删除.git目录，2）删除整个 project 目录(就是包含.git目录的那个目录)
+	rm -rf .git
+	cd .. && rm -rf projectDir
+
+更多命令：
+git init prjDir 指定初始仓库的名字，并创建对应目录
+git init --bare prjDir.git 创建一个初始仓库（中心仓库），这个仓储不会有工作目录，通常用于在服务器上创建一个裸仓库。
+
+git log -stat 输出包括了git log的信息, 并且额外显示了哪些文件被修改了, 哪一行是新加的或者被删除了.
+git log -p 有点类似于git log --state, 但是git log -p提供的信息更加详细, 他把修改的内容也给展现出来了.
+git log --author="<pattern>" 搜索指定作者的commit. <pattern>可以是正则表达式.
+git log <file>	只显示指定文件的commit.
+
+git tag -a `date "+%Y-%m-%d_%H-%M-%S"` -m "frist date based tag"
+
+git tag -d <tagname>	----删除一个tag
+
+git reset HEAD~3
+* reset命令把当前分支指向另一个位置，并且有选择的变动工作目录和索引。也用来在从历史仓库中【复制文件到索引】，而【不动工作目录】。
+* 如果用--hard选项，那么工作目录也更新，如果用--soft选项，那么工作目录和索引都不变。
+* 如果没有给出提交点的版本号，那么默认用HEAD。这样，分支指向不变，但是索引会回滚到最后一次提交，如果用--hard选项，工作目录也同样。
+
+可以认为 HEAD(大写)是"current branch"(当下的分支)。当你用git checkout切换分支的时候，HEAD 修订版本重新指向新的分支。有的时候HEAD会指向一个没有分支名字的修订版本，这种情况叫”detached HEAD“
+
+
+
+git remote
+git remote -v	----和上面的命令类似, 但是他列出了每个连接的url地址.
+git remote add <name> <url>
+git remote rm <name>
+git remote rename <old-name> <new-name>
+git remote set-url origin mySSH_url
+
+git的撤销操作：reset、checkout和revert
+https://segmentfault.com/a/1190000009126517
+git reset用于撤销未被提交到remote的改动，即撤销local的修改。除了移动当前分支的HEAD，还可以更改workspace和index：
+	--soft：修改HEAD，不修改index和workspace。
+	--mixed：修改HEAD和index，不修改workspace。【默认行为】。
+	--hard：修改HEAD、index、workspace。
+git reset HEAD^
+
+
+详解git fetch与git pull的区别 https://blog.csdn.net/riddle1981/article/details/74938111
+git fetch 相当于是从远程获取最新版本到本地，但不会自动merge。
+git pull 可以认为是git fetch和git merge两个步骤的结合。
+git fetch <远程主机名> <分支名>
+	git fetch origin master	----如果是裸仓库，没有origin，可以先 git remote add origin https://github.com/git-for-windows/git-sdk-32
+git pull <远程主机名> <远程分支名>:<本地分支名>
+	git pull origin master		----通常本都是省略本地分支名，表示合并同名分支
+
+
+git config --system core.editor <editor>
+	git config --global core.editor "vim"
+git config --global --edit	----调用默认编辑器编辑 global config file
+
+git config --global user.name <name>
+git config --global user.email <email>
+git config --global --list
+
+system config file: <git-root>/mingw64/etc/gitconfig
+	$(prefix)/etc/gitconfig	----Linux
+global config file: %homepath%/.gitconfig
+local config file: <repo>/.git/config
+
+git config命令		--system，--global，--local(默认写入)和--file <filename>
+https://www.yiibai.com/git/git_config.html
+读取时，默认情况下从系统，全局和存储库本地配置文件读取这些值，而选项--system，--global，--local和--file <filename>可用于告知命令从只有那个位置设置和读取。
+写入时，默认情况下将新值写入存储库本地配置文件，并且可以使用选项--system，--global，--file <filename>来告诉命令写入该位置(可以指定为 --local，但这是默认值)。
+
+
+atlassian 的 git tutorials https://www.atlassian.com/git/tutorials
+[译]Atlassian Git系列教程 https://www.cnblogs.com/irocker/p/atlassian-git-tutorials.html
+
+
+
+
+git寻根——^和~的区别
+https://www.cnblogs.com/hutaoer/archive/2013/05/14/3078191.html
+先切换到master分支，然后合并br1 br2 br3，会新生成一个提交3b03. 当前节点一共有3个“父提交”，就是bar1，bar2，bar3对应的提交
+因为HEAD^1对应的就是br1指向的提交4927，HEAD^2对应的是br2指向的063f提交，HEAD^3对应的是br3指向的4f9c提交。3b03没有第4个父提交，因此也没有第4条线，这时候访问HEAD^n(n>3)都会报错。
+
+(<commit>|HEAD)^n，指的是HEAD的第n个父提交（HEAD有多个父提交的情况下），如果HEAD有N个父提交，那么n取值为n < = N.
+(<commit>|HEAD)~n，指的是HEAD的第n个祖先提交，用一个等式来说明就是：(<commit>|HEAD)~n = (<commit>|HEAD)^^^….(^的个数为n).我们通过例子来验证一下吧。
+HEAD~2 相当于HEAD的第一个父提交的第一个父提交。即HEAD~2 = HEAD^^ = HEAD^1^1
+^代表父提交,当一个提交有多个父提交时，可以通过在^后面跟上一个数字，表示第几个父提交，^相当于”^1”.
+~<n>相当于连续的<n>个^.
+checkout只会移动HEAD指针，reset会改变HEAD的引用值。
+HEAD~1 = HEAD^ = HEAD^1
+
+
+
+一文告诉你如何导出 Git 变更文件 https://zhuanlan.zhihu.com/p/74796130
+方法1，使用 git 自带命令 git archive, 语法如下。
+	git archive -o c:/Users/yourusername/Desktop/export.zip NewCommitId $(git diff --name-only OldCommitId NewCommitId)
+	git archive -o c:/Users/yourusername/Desktop/export.zip 479d554cf570edcc28c20ce264c6f216f8223bf3 $(git diff --name-only a838d0512e84e5eb42569cce3ef305d3ac1c44d0 479d554cf570edcc28c20ce264c6f216f8223bf3)
+方法2，下载 TortoiseGit Git 客户端软件，使用方法和 svn 的 export 功能类似。
+
+
+
+

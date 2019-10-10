@@ -1,0 +1,37 @@
+#!/bin/sh
+
+export JAVA_HOME=/home/ted/dev/runtime/jdk1.8.161
+echo $JAVA_HOME
+unset JAVA_HOME
+
+https://ss64.com/bash/
+
+
+SpringMVC Restful api接口实现的代码 https://www.jb51.net/article/124308.htm
+
+Spring MVC之@RequestMapping 详解 https://blog.csdn.net/kobejayandy/article/details/12690041
+
+@RequestMapping
+RequestMapping 注解有六个属性
+1、 value， method；
+value：     指定请求的实际地址，指定的地址可以是URI Template 模式
+method：  指定请求的method类型， GET、POST、PUT、DELETE等；
+2、 consumes，produces；
+consumes： 指定处理请求的提交内容类型（Content-Type），例如application/json, text/html;
+produces:    指定返回的内容类型，仅当request请求头中的(Accept)类型中包含该指定类型才返回；
+3、 params，headers；
+params： 指定request中必须包含某些参数值是，才让该方法处理。
+headers： 指定request中必须包含某些指定的header值，才能让该方法处理请求。
+
+@Controller  
+@RestController
+@RequestMapping("/api/Student")
+
+@RequestMapping(method = RequestMethod.POST)
+
+@ResponseBody
+
+ @RequestMapping(value = "/{id}",method = RequestMethod.GET)
+  public String Get(@PathVariable("id") Integer id) {
+   return "{\"id\":\""+id+"\",\"name\":\"get path variable id\"}";
+  }
