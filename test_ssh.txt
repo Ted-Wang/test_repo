@@ -6,3 +6,4 @@ test ssh 5th
 test ssh 6th
 test credential helper
 test credential manager
+test built in credential manager
