@@ -1,55 +1,60 @@
+[git frequently used commands][git cheatsheet]
+
 git init
 git status
 git add *
 git commit -m "message"
-	git commit -a -m "message" //以上2步合成一步，但是注意，这样只提交“修改过的文件”，新添加的文件，没有被tracked，必须用 git add
-git log -n 5            //列出最近5次提交
-git tag `date "+%Y-%m-%d_%H-%M-%S"`
-git tag
+	git commit -a -m "message"  ----以上2步合成一步，但是注意，这样只提交“修改过的文件”，新添加的文件，没有被tracked，必须用 git add
 git checkout <tag_name>
-git checkout master    //从 tag 回到 mainline 最新的 commit
-git checkout -- <filename>    //回滚一个文件
+git checkout master             ----从 tag 回到 mainline 最新的 commit
+git checkout -- <filename>      ----回滚一个文件
 
 删库：1）删除.git目录，2）删除整个 project 目录(就是包含.git目录的那个目录)
 	rm -rf .git
 	cd .. && rm -rf projectDir
 
-更多命令：
-git init prjDir 指定初始仓库的名字，并创建对应目录
-git init --bare prjDir.git 创建一个初始仓库（中心仓库），这个仓储不会有工作目录，通常用于在服务器上创建一个裸仓库。
+git reset HEAD~1                ----undo 最后一次 commit
+git reset HEAD                  ----undo git add *
+git reset HEAD --hard           ----undo 并且同时修改当前工作区
+
+git init prjDir                 ----指定初始仓库的名字，并创建对应目录
+git init --bare prjDir.git      ----创建一个初始仓库（中心仓库），这个仓储不会有工作目录，通常用于在服务器上创建一个裸仓库。
 
 git log -3
 git log --oneline --decorate    ----#oneline 只显示 hash 和 message，decorate 会同时显示所有 references (e.g., branches, tags, etc)
-git log --stat		----显示每个 commit 增加了多少行，删除了多少行(修改一行会被显示 增加1行+删除1行)
-git log -p			----显示每个 commit 具体的修改内容
+git log --stat                  ----显示每个 commit 增加了多少行，删除了多少行(修改一行会被显示 增加1行+删除1行)
+git log -p                      ----显示每个 commit 具体的修改内容
 git log --author="<pattern>"    ----搜索指定作者的commit. <pattern>可以是正则表达式.
-git log -S"Hello, World!"		----display commits by content
-git log -- <file1 file2>	    ----只显示指定文件的 commits.
-git shortlog -n	    ----按 author name 分组统计显示每个 user 的 commits。 默认按 author name 排序，-n 是按 commits 数量排序
+git log -S"Hello, World!"       ----display commits by content
+git log -- <file1 file2>        ----只显示指定文件的 commits.
+git shortlog -n                 ----按 author name 分组统计显示每个 user 的 commits。 默认按 author name 排序，-n 是按 commits 数量排序
 
 git tag
 git tag -l 'v1.4.2.*'
 git tag -a v1.4 -m 'my version 1.4'
 git show v1.4
 git tag `date "+%Y-%m-%d_%H-%M-%S"`
-git tag -d <tagname>	----删除一个tag
+git tag -d <tagname>      ----删除一个tag
 
-git reset HEAD~1        ----undo 最后一次 commit
-git reset HEAD          ----undo git add *
-git reset HEAD --hard   ----undo 并且同时修改当前工作区
+git branch
+git branch -v
+git branch dev            ----创建分支
+git checkout master
+git merge dev
+git branch -d dev
+git checkout -b dev       ----创建并切换到dev分支
+git switch -c dev         ----新版本的Git提供了新的git switch命令来切换分支
 
-
-git remote -v	----和上面的命令类似, 但是他列出了每个连接的url地址.
-git remote set-url origin mySSH_url
+git remote -v
+git remote set-url origin <url>
 git remote add <name> <url>
 git remote rm <name>
 git remote rename <old-name> <new-name>
 
-
-git fetch 相当于是从远程获取最新版本到本地，但不会自动merge。
-git pull 可以认为是git fetch和git merge两个步骤的结合。
+git fetch       ----从远程获取最新版本到本地，但不会自动merge。
+git pull        ----可以认为是git fetch和git merge两个步骤的结合。
 git fetch <远程主机名> <分支名>
-	git fetch origin master	----如果是裸仓库，没有origin，可以先 git remote add origin https://github.com/git-for-windows/git-sdk-32
+	git fetch origin master	    ----如果是裸仓库，没有origin，可以先 git remote add origin <url>
 git pull <远程主机名> <远程分支名>:<本地分支名>
 	git pull origin master		----通常本都是省略本地分支名，表示合并同名分支
 
