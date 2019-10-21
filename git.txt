@@ -3,12 +3,12 @@ git status
 git add *
 git commit -m "message"
 	git commit -a -m "message" //以上2步合成一步，但是注意，这样只提交“修改过的文件”，新添加的文件，没有被tracked，必须用 git add
-git log -n 5 //列出最近5次提交
+git log -n 5            //列出最近5次提交
 git tag `date "+%Y-%m-%d_%H-%M-%S"`
 git tag
-git checkout tag_name
+git checkout <tag_name>
 git checkout master    //从 tag 回到 mainline 最新的 commit
-git checkout filename    //回滚一个文件
+git checkout -- <filename>    //回滚一个文件
 
 删库：1）删除.git目录，2）删除整个 project 目录(就是包含.git目录的那个目录)
 	rm -rf .git
@@ -18,41 +18,34 @@ git checkout filename    //回滚一个文件
 git init prjDir 指定初始仓库的名字，并创建对应目录
 git init --bare prjDir.git 创建一个初始仓库（中心仓库），这个仓储不会有工作目录，通常用于在服务器上创建一个裸仓库。
 
-git log -stat 输出包括了git log的信息, 并且额外显示了哪些文件被修改了, 哪一行是新加的或者被删除了.
-git log -p 有点类似于git log --state, 但是git log -p提供的信息更加详细, 他把修改的内容也给展现出来了.
-git log --author="<pattern>" 搜索指定作者的commit. <pattern>可以是正则表达式.
-git log <file>	只显示指定文件的commit.
+git log -3
+git log --oneline --decorate    ----#oneline 只显示 hash 和 message，decorate 会同时显示所有 references (e.g., branches, tags, etc)
+git log --stat		----显示每个 commit 增加了多少行，删除了多少行(修改一行会被显示 增加1行+删除1行)
+git log -p			----显示每个 commit 具体的修改内容
+git log --author="<pattern>"    ----搜索指定作者的commit. <pattern>可以是正则表达式.
+git log -S"Hello, World!"		----display commits by content
+git log -- <file1 file2>	    ----只显示指定文件的 commits.
+git shortlog -n	    ----按 author name 分组统计显示每个 user 的 commits。 默认按 author name 排序，-n 是按 commits 数量排序
 
-git tag -a `date "+%Y-%m-%d_%H-%M-%S"` -m "frist date based tag"
-
+git tag
+git tag -l 'v1.4.2.*'
+git tag -a v1.4 -m 'my version 1.4'
+git show v1.4
+git tag `date "+%Y-%m-%d_%H-%M-%S"`
 git tag -d <tagname>	----删除一个tag
 
-git reset HEAD~3
-* reset命令把当前分支指向另一个位置，并且有选择的变动工作目录和索引。也用来在从历史仓库中【复制文件到索引】，而【不动工作目录】。
-* 如果用--hard选项，那么工作目录也更新，如果用--soft选项，那么工作目录和索引都不变。
-* 如果没有给出提交点的版本号，那么默认用HEAD。这样，分支指向不变，但是索引会回滚到最后一次提交，如果用--hard选项，工作目录也同样。
-
-可以认为 HEAD(大写)是"current branch"(当下的分支)。当你用git checkout切换分支的时候，HEAD 修订版本重新指向新的分支。有的时候HEAD会指向一个没有分支名字的修订版本，这种情况叫”detached HEAD“
+git reset HEAD~1        ----undo 最后一次 commit
+git reset HEAD          ----undo git add *
+git reset HEAD --hard   ----undo 并且同时修改当前工作区
 
 
-
-git remote
 git remote -v	----和上面的命令类似, 但是他列出了每个连接的url地址.
+git remote set-url origin mySSH_url
 git remote add <name> <url>
 git remote rm <name>
 git remote rename <old-name> <new-name>
-git remote set-url origin mySSH_url
-
-git的撤销操作：reset、checkout和revert
-https://segmentfault.com/a/1190000009126517
-git reset用于撤销未被提交到remote的改动，即撤销local的修改。除了移动当前分支的HEAD，还可以更改workspace和index：
-	--soft：修改HEAD，不修改index和workspace。
-	--mixed：修改HEAD和index，不修改workspace。【默认行为】。
-	--hard：修改HEAD、index、workspace。
-git reset HEAD^
 
 
-详解git fetch与git pull的区别 https://blog.csdn.net/riddle1981/article/details/74938111
 git fetch 相当于是从远程获取最新版本到本地，但不会自动merge。
 git pull 可以认为是git fetch和git merge两个步骤的结合。
 git fetch <远程主机名> <分支名>
@@ -60,14 +53,16 @@ git fetch <远程主机名> <分支名>
 git pull <远程主机名> <远程分支名>:<本地分支名>
 	git pull origin master		----通常本都是省略本地分支名，表示合并同名分支
 
+git push <远程主机名> <本地分支名>:<远程分支名>
+	git push
+	git push origin master
 
-git config --system core.editor <editor>
-	git config --global core.editor "vim"
-git config --global --edit	----调用默认编辑器编辑 global config file
-
+git config --global/system/local -l
+git config --global -e
+git config --global core.editor <editor>
+git config --global core.editor "vim"
 git config --global user.name <name>
 git config --global user.email <email>
-git config --global --list
 
 system config file: <git-root>/mingw64/etc/gitconfig
 	$(prefix)/etc/gitconfig	----Linux
@@ -79,27 +74,18 @@ https://www.yiibai.com/git/git_config.html
 读取时，默认情况下从系统，全局和存储库本地配置文件读取这些值，而选项--system，--global，--local和--file <filename>可用于告知命令从只有那个位置设置和读取。
 写入时，默认情况下将新值写入存储库本地配置文件，并且可以使用选项--system，--global，--file <filename>来告诉命令写入该位置(可以指定为 --local，但这是默认值)。
 
+git stash
+git stash list
+git stash pop           ----恢复最新的进度到工作区。git默认会把工作区和暂存区的改动都恢复到工作区。
+git stash pop --index   ----恢复最新的进度到工作区和暂存区。（尝试将原来暂存区的改动还恢复到暂存区）
+git stash pop stash@{1} ----恢复指定的进度到工作区。stash_id是通过git stash list命令得到的
+git stash apply [–index] [stash_id]	----除了不删除恢复的进度之外，其余和git stash pop 命令一样。
+git stash drop [stash_id]	----删除一个存储的进度。如果不指定stash_id，则默认删除最新的存储进度。
+git stash clear	        ----删除所有存储的进度。
+
 
 atlassian 的 git tutorials https://www.atlassian.com/git/tutorials
 [译]Atlassian Git系列教程 https://www.cnblogs.com/irocker/p/atlassian-git-tutorials.html
-
-
-
-
-git寻根——^和~的区别
-https://www.cnblogs.com/hutaoer/archive/2013/05/14/3078191.html
-先切换到master分支，然后合并br1 br2 br3，会新生成一个提交3b03. 当前节点一共有3个“父提交”，就是bar1，bar2，bar3对应的提交
-因为HEAD^1对应的就是br1指向的提交4927，HEAD^2对应的是br2指向的063f提交，HEAD^3对应的是br3指向的4f9c提交。3b03没有第4个父提交，因此也没有第4条线，这时候访问HEAD^n(n>3)都会报错。
-
-(<commit>|HEAD)^n，指的是HEAD的第n个父提交（HEAD有多个父提交的情况下），如果HEAD有N个父提交，那么n取值为n < = N.
-(<commit>|HEAD)~n，指的是HEAD的第n个祖先提交，用一个等式来说明就是：(<commit>|HEAD)~n = (<commit>|HEAD)^^^….(^的个数为n).我们通过例子来验证一下吧。
-HEAD~2 相当于HEAD的第一个父提交的第一个父提交。即HEAD~2 = HEAD^^ = HEAD^1^1
-^代表父提交,当一个提交有多个父提交时，可以通过在^后面跟上一个数字，表示第几个父提交，^相当于”^1”.
-~<n>相当于连续的<n>个^.
-checkout只会移动HEAD指针，reset会改变HEAD的引用值。
-HEAD~1 = HEAD^ = HEAD^1
-
-
 
 一文告诉你如何导出 Git 变更文件 https://zhuanlan.zhihu.com/p/74796130
 方法1，使用 git 自带命令 git archive, 语法如下。
