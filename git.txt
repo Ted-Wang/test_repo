@@ -5,10 +5,12 @@ git status
 git add *
 git commit -m "message"
 	git commit -a -m "message"  ----以上2步合成一步，但是注意，这样只提交“修改过的文件”，新添加的文件，没有被tracked，必须用 git add
+git commit -a                   ----使用-a可以查看有哪些文件会被提交，不填message即可取消提交，相当于dry run
 git checkout <tag_name>
 git checkout master             ----从 tag 回到 mainline 最新的 commit
 git checkout -- <filename>      ----回滚一个文件
-
+git show                        ----show diff of last commit。show 可以指定各种对象，显示内容大不相同。
+git show <tag>
 删库：1）删除.git目录，2）删除整个 project 目录(就是包含.git目录的那个目录)
 	rm -rf .git
 	cd .. && rm -rf projectDir
@@ -81,12 +83,17 @@ https://www.yiibai.com/git/git_config.html
 
 git stash
 git stash list
-git stash pop           ----恢复最新的进度到工作区。git默认会把工作区和暂存区的改动都恢复到工作区。
-git stash pop --index   ----恢复最新的进度到工作区和暂存区。（尝试将原来暂存区的改动还恢复到暂存区）
-git stash pop stash@{1} ----恢复指定的进度到工作区。stash_id是通过git stash list命令得到的
+git stash pop               ----恢复最新的进度到工作区。git默认会把工作区和暂存区的改动都恢复到工作区。
+git stash pop --index       ----恢复最新的进度到工作区和暂存区。（尝试将原来暂存区的改动还恢复到暂存区）
+git stash pop stash@{1}     ----恢复指定的进度到工作区。stash_id是通过git stash list命令得到的
 git stash apply [–index] [stash_id]	----除了不删除恢复的进度之外，其余和git stash pop 命令一样。
 git stash drop [stash_id]	----删除一个存储的进度。如果不指定stash_id，则默认删除最新的存储进度。
-git stash clear	        ----删除所有存储的进度。
+git stash clear	            ----删除所有存储的进度。
+
+git diff                    ----此命令比较的是工作目录(Working tree)和暂存区域快照(index)之间的差异，也就是修改之后还没有 staging 起来的变化内容。
+git diff --cached   	    ----索引和最后一次提交之间的变化; 查看已经git add ，但没有git commit 的改动。
+git diff HEAD       	    ----自上次提交以来工作树中的更改；包括工作区和已经staged的修改。如果运行“git commit -a”，查看将会提交什么(不填message会取消提交)。
+git diff HEAD^ HEAD         ----比较上次提交和上上次提交
 
 
 atlassian 的 git tutorials https://www.atlassian.com/git/tutorials

@@ -1,3 +1,4 @@
+
 #!/bin/sh
 
 export JAVA_HOME=/home/ted/dev/runtime/jdk1.8.161
