@@ -12,3 +12,4 @@ test branch del
 add after transfer to private
 test frp
 test office2
+push before the delayed push
