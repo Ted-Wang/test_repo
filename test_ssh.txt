@@ -16,4 +16,8 @@ test office2
 push before the delayed push
 push before the delayed push 2
 test office2
+<<<<<<< HEAD
+2025-10-22 test from VSCode, set multi github repo in ONE Code workspace
+=======
 test from local VSCode
+>>>>>>> 11960b94d578b528956544d2ee2d3bddd710df99
